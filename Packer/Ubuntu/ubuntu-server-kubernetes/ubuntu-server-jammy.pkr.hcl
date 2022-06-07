@@ -29,8 +29,8 @@ source "proxmox" "ubuntu-server-jammy" {
     # VM General Settings
     node = "beta"
     vm_id = "9000"
-    vm_name = "ubuntu-server-jammy"
-    template_description = "Ubuntu Server jammy Image"
+    vm_name = "ubuntu-server-kubernetes"
+    template_description = "Ubuntu Server Kubernetes"
 
     # VM OS Settings
     # (Option 1) Local ISO File
