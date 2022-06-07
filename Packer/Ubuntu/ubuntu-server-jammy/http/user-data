@@ -1,0 +1,33 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US
+  keyboard:
+    layout: es
+  ssh:
+    install-server: true
+    allow-pw: true
+    disable_root: true
+    ssh_quiet_keygen: true
+    allow_public_ssh_keys: true
+  packages:
+    - qemu-guest-agent
+    - sudo
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  user-data:
+    package_upgrade: true
+    timezone: Europe/Madrid
+    users:
+      - name: paumanel
+        groups: [adm, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        # passwd: your-password
+        # - or -
+        ssh_authorized_keys:
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZi47g0zVkcRDG9JgxD1biIcGuCMu6DLjiMg2jBNUctNejUN9bsu5Ky/KZpYkCga7qCPHi2yv59OpmTIs/P1jroGADYLKH1f5YYjrnjjoA+hiMX5YbR5qX9Z8OlPDZYcEqeqYgvBGpMKPuEcIHHAr+Fv/qjNxlFA69OcRZ0FrZbxX7p2t96Eo04mkP+n1s1wLlwe+5K1SYUyTwBYOsLcxXySpYZo8nT95Lfvwmy+eXXHSMXwUz/NIYOYygdNLJIFQc7yiTFfI30STY1gE546H7bLgfSJfbzq6rextTU2EzWxXWng+l4IU5DqZ4P8VNFWN50tUBsWcjfrzDNobIBQOT packer-ssh
