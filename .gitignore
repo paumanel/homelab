@@ -1,2 +1,7 @@
+.gitignore
+
 # Exclude folder with secrets
 secrets
+
+# Exclude secret vars
+secrets.auto.pkrvars.hcl
