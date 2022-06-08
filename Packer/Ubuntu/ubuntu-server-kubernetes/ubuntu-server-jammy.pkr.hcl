@@ -121,7 +121,8 @@ build {
             "sudo apt -y autoclean",
             "sudo cloud-init clean",
             "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
-            "sudo sync"
+            "sudo sync",
+            "sudo swapoff -a" # Manually disable SWAP since swap: 0 does not work
         ]
     }
 
@@ -156,7 +157,7 @@ build {
         ]
     }
 
-    #K8S installing kubeadm kubeelt and kubectl
+    #K8S installing kubeadm kubelet and kubectl
     provisioner "shell" {
         inline = [
             "sudo apt update",
@@ -178,5 +179,10 @@ build {
 
     # TODO:
     # LB for control plane?
+    
+    # Look into warnings:
+    /* [WARNING Swap]: swap is enabled; production deployments should disable swap unless testing the NodeSwap feature gate of the kubelet
+    [WARNING SystemVerification]: missing optional cgroups: blkio */
+
 
 }
