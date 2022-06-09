@@ -1,7 +1,3 @@
-# Ubuntu Server jammy
-# ---
-# Packer Template to create an Ubuntu Server (jammy) on Proxmox
-
 # Variable Definitions
 variable "proxmox_api_url" {
     type = string
@@ -17,7 +13,7 @@ variable "proxmox_api_token_secret" {
 }
 
 # Resource Definiation for the VM Template
-source "proxmox" "ubuntu-server-jammy" {
+source "proxmox" "ubuntu-server-kubernetes" {
  
     # Proxmox Connection Settings
     proxmox_url = "${var.proxmox_api_url}"
@@ -107,13 +103,13 @@ source "proxmox" "ubuntu-server-jammy" {
 # Build Definition to create the VM Template
 build {
 
-    name = "ubuntu-server-jammy"
-    sources = ["source.proxmox.ubuntu-server-jammy"]
+    name = "ubuntu-server-kubernetes"
+    sources = ["source.proxmox.ubuntu-server-kubernetes"]
 
     # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
     provisioner "shell" {
         inline = [
-            "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+            "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
             "sudo rm /etc/ssh/ssh_host_*",
             "sudo truncate -s 0 /etc/machine-id",
             "sudo apt -y autoremove --purge",
@@ -121,8 +117,7 @@ build {
             "sudo apt -y autoclean",
             "sudo cloud-init clean",
             "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
-            "sudo sync",
-            "sudo swapoff -a" # Manually disable SWAP since swap: 0 does not work
+            "sudo sync"
         ]
     }
 
@@ -148,7 +143,7 @@ build {
             "net.bridge.bridge-nf-call-iptables = 1\nnet.bridge.bridge-nf-call-ip6tables = 1\nnet.ipv4.ip_forward = 1\nEOF",
             "sudo sysctl --system",
             "sudo apt update",
-            "sudo apt install containerd -y",
+            "sudo apt install -y containerd",
             "sudo mkdir -p /etc/containerd",
             "sudo containerd config default | sudo tee /etc/containerd/config.toml",
             "sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml",
@@ -171,9 +166,16 @@ build {
     }
 
 
-    # Remove SSH keys used during image creation process
+    # Last cleanup steps
     provisioner "shell" {
-        inline = [ "sudo rm -rf /home/paumanel/.ssh/authorized_keys" ]
+        inline = [ 
+            "cat <<EOF | sudo tee /etc/udev/rules.d/70-persistent-net.rules", #Apparently for cloud-init to set network configuration the nic needs to be named eth0
+            "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"?*\", ATTR{dev_id}==\"0x0\", ATTR{type}==\"1\", NAME=\"eth0\"\nEOF",
+            "sudo rm -f /etc/netplan/00-installer-config.yaml",
+            "sudo rm -f /etc/netplan/50-cloud-init.yaml",
+            "sudo cloud-init clean",
+            "sudo rm -rf /home/paumanel/.ssh/authorized_keys"
+            ]
     }
 
 
@@ -181,8 +183,7 @@ build {
     # LB for control plane?
     
     # Look into warnings:
-    /* [WARNING Swap]: swap is enabled; production deployments should disable swap unless testing the NodeSwap feature gate of the kubelet
-    [WARNING SystemVerification]: missing optional cgroups: blkio */
+    # [WARNING SystemVerification]: missing optional cgroups: blkio    Seems to be unrelated as with cgroups v2 blkio is replaced with io
 
 
 }
