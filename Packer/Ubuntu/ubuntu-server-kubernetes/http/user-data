@@ -13,16 +13,17 @@ autoinstall:
   packages:
     - qemu-guest-agent
     - sudo
+    - at
   storage:
     layout:
-      name: lvm
+      name: direct
     swap:
       size: 0
   user-data:
     package_upgrade: true
     timezone: Europe/Madrid
     users:
-      - name: paumanel
+      - name: packer
         groups: [adm, sudo]
         lock-passwd: false
         sudo: ALL=(ALL) NOPASSWD:ALL
