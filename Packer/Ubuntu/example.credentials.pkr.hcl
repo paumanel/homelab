@@ -1,3 +1,9 @@
-proxmox_api_url = "https://FQDN:8006/api2/json"  # Your Proxmox IP Address
-proxmox_api_token_id = "USER@pam!TOKEN"  # API Token ID
-proxmox_api_token_secret = "SECRET"
+proxmox_api_url           = "https://FQDN:8006/api2/json"  # Your Proxmox IP Address
+proxmox_api_token_id      = "USER@pam!TOKEN"  # API Token ID
+proxmox_api_token_secret  = "SECRET"
+ssh_private_key_file_path = "..\\secrets\\priv_openssh.key" # Full or relative Path to private SSH key in openssh format
+proxmox_node              = "node1"
+vm_id                     = "9000"
+iso_path                  = "ubuntu-22.04-live-server-amd64.iso"
+iso_storage_pool          = "local"
+ssh_username              = "user"
