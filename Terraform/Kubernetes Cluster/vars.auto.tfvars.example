@@ -1,0 +1,7 @@
+# Terraform Variable examples
+
+proxmox_provider = {
+    url = "https://FQDN:8006/api2/json"
+    token = "USER@pam!TOKEN"
+    secret = "SECRET"
+}
